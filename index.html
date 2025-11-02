@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#667eea">
     <title>Scientific Calculator</title>
     <style>
-        /* Your CSS here - mobile-friendly version */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: Arial; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh; 
-            padding: 10px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 10px;
         }
         .calculator {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             padding: 15px;
             width: 100%;
-            max-width: 350px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            max-width: 380px;
         }
         .display {
             background: #1a1a1a;
@@ -31,11 +35,143 @@
             padding: 15px;
             margin-bottom: 15px;
             text-align: right;
-            font-size: 1.5em;
-            min-height: 80px;
+            font-size: 1.6em;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            word-wrap: break-word;
             word-break: break-all;
         }
-        /* ... rest of your CSS ... */
+        .basic-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .scientific-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            display: none;
+        }
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 15px 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            background: #505050;
+            color: white;
+            min-height: 50px;
+            transition: all 0.2s;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .basic-buttons button {
+            padding: 15px;
+            font-size: 1.2em;
+        }
+        .scientific-buttons button {
+            padding: 10px 6px;
+            font-size: 0.9em;
+            min-height: 45px;
+        }
+        .operator {
+            background: #ff9500;
+        }
+        .equals {
+            background: #ff9500;
+        }
+        .clear {
+            background: #a6a6a6;
+            color: black;
+        }
+        .delete {
+            background: #ff3b30;
+            color: white;
+        }
+        .zero-btn {
+            grid-column: span 2;
+        }
+        .advanced {
+            background: #5856d6;
+        }
+        .ad-container {
+            margin: 12px 0;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            display: none;
+        }
+        .mode-switcher {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+        .mode-btn {
+            padding: 6px 12px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        .author-btn {
+            background: #28a745;
+            padding: 6px 12px;
+            font-size: 0.8em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            color: white;
+        }
+        .error {
+            color: #ff3b30;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #1c2526;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 300px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .close-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -47,53 +183,291 @@
         </div>
         <div class="display" id="display">0</div>
         
+        <div class="ad-container" id="adContainer">
+            Ads will show here
+        </div>
+        
         <!-- Basic Mode -->
         <div class="basic-buttons" id="basicMode">
-            <!-- Your basic buttons here -->
             <button class="clear" onclick="clearDisplay()">C</button>
             <button onclick="deleteLast()">⌫</button>
             <button class="operator" onclick="appendToDisplay('/')">/</button>
             <button class="operator" onclick="appendToDisplay('*')">×</button>
-            <!-- ... rest of buttons ... -->
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button class="equals" onclick="calculate()">=</button>
+            <button class="zero-btn" onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
         </div>
         
         <!-- Scientific Mode -->
-        <div class="scientific-buttons" id="scientificMode" style="display: none;">
-            <!-- Your scientific buttons here -->
+        <div class="scientific-buttons" id="scientificMode">
+            <!-- Row 1 -->
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="delete" onclick="deleteLast()">⌫</button>
+            <button onclick="appendToDisplay('(')">(</button>
+            <button onclick="appendToDisplay(')')">)</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            
+            <!-- Row 2 -->
+            <button onclick="scientificFunction('sin')">sin</button>
+            <button onclick="scientificFunction('cos')">cos</button>
+            <button onclick="scientificFunction('tan')">tan</button>
+            <button onclick="scientificFunction('asin')">sin⁻¹</button>
+            <button class="operator" onclick="appendToDisplay('*')">×</button>
+            
+            <!-- Row 3 -->
+            <button onclick="scientificFunction('sqrt')">√</button>
+            <button onclick="scientificFunction('power')">x²</button>
+            <button onclick="scientificFunction('powerY')">x^y</button>
+            <button onclick="scientificFunction('log')">log</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            
+            <!-- Row 4 -->
+            <button onclick="appendToDisplay('π')">π</button>
+            <button onclick="appendToDisplay('e')">e</button>
+            <button onclick="scientificFunction('factorial')">n!</button>
+            <button onclick="scientificFunction('ln')">ln</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            
+            <!-- Row 5 -->
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="scientificFunction('percent')">%</button>
+            <button class="advanced" onclick="scientificFunction('exp')">EXP</button>
+            
+            <!-- Row 6 -->
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="scientificFunction('abs')">|x|</button>
+            <button class="advanced" onclick="scientificFunction('tenPower')">10ˣ</button>
+            
+            <!-- Row 7 -->
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button class="advanced" onclick="scientificFunction('mod')">MOD</button>
+            <button class="advanced" onclick="scientificFunction('random')">RAND</button>
+            
+            <!-- Row 8 -->
+            <button class="zero-btn" onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button class="equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <!-- Author Info Modal -->
+    <div class="modal" id="authorModal">
+        <div class="modal-content">
+            <h3>Author Information</h3>
+            <p><strong>MR.JAMES</strong></p>
+            <p>📱 <a href="https://wa.me/+96598064347" target="_blank">+9598064347</a></p>
+            <p>🐙 <a href="https://github.com/James404-cyber" target="_blank">James404-cyber</a></p>
+            <p>📧 <a href="mailto:mr.jamesmr23@gmail.com">mr.jamesmr23@gmail.com</a></p>
+            <p>📍 Dhaka, Bangladesh</p>
+            <button class="close-btn" onclick="closeAuthorInfo()">Close</button>
         </div>
     </div>
 
     <script>
-        // Basic calculator functions
         let currentDisplay = '0';
-        
-        function appendToDisplay(value) {
-            if (currentDisplay === '0') {
-                currentDisplay = value;
+        let shouldResetDisplay = false;
+        let currentMode = 'basic';
+
+        function updateDisplay() {
+            const display = document.getElementById('display');
+            display.textContent = currentDisplay;
+            
+            if (currentDisplay === 'Error' || currentDisplay === 'Math Error') {
+                display.classList.add('error');
             } else {
-                currentDisplay += value;
+                display.classList.remove('error');
             }
-            document.getElementById('display').textContent = currentDisplay;
+            
+            if (currentDisplay.length > 15) {
+                display.style.fontSize = '1.2em';
+            } else if (currentDisplay.length > 10) {
+                display.style.fontSize = '1.4em';
+            } else {
+                display.style.fontSize = '1.6em';
+            }
         }
-        
+
+        function appendToDisplay(value) {
+            if (currentDisplay === '0' || shouldResetDisplay || 
+                currentDisplay === 'Error' || currentDisplay === 'Math Error') {
+                currentDisplay = value;
+                shouldResetDisplay = false;
+            } else {
+                if (currentDisplay.length < 25) {
+                    currentDisplay += value;
+                }
+            }
+            updateDisplay();
+        }
+
         function clearDisplay() {
             currentDisplay = '0';
-            document.getElementById('display').textContent = currentDisplay;
+            updateDisplay();
         }
-        
-        function calculate() {
+
+        function deleteLast() {
+            if (currentDisplay.length > 1) {
+                currentDisplay = currentDisplay.slice(0, -1);
+            } else {
+                currentDisplay = '0';
+            }
+            updateDisplay();
+        }
+
+        async function calculate() {
             try {
-                // Basic calculation - advanced part will be in hidden API
-                let result = eval(currentDisplay.replace(/×/g, '*'));
-                currentDisplay = result.toString();
-                document.getElementById('display').textContent = currentDisplay;
+                let expression = currentDisplay
+                    .replace(/×/g, '*')
+                    .replace(/π/g, 'Math.PI')
+                    .replace(/e/g, 'Math.E')
+                    .replace(/%/g, '/100')
+                    .replace(/\^/g, '**');
+
+                const response = await fetch('/api/calculator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        expression: expression,
+                        type: 'advanced'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentDisplay = data.result;
+                } else {
+                    currentDisplay = 'Error';
+                }
             } catch (error) {
                 currentDisplay = 'Error';
-                document.getElementById('display').textContent = currentDisplay;
+            }
+            shouldResetDisplay = true;
+            updateDisplay();
+            
+            if (currentMode === 'scientific') {
+                showAd();
             }
         }
-        
-        // More functions here...
+
+        async function scientificFunction(func) {
+            try {
+                const val = parseFloat(currentDisplay);
+                
+                const response = await fetch('/api/calculator', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        function: func,
+                        value: val,
+                        type: 'scientific'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentDisplay = data.result;
+                    shouldResetDisplay = true;
+                } else {
+                    currentDisplay = 'Error';
+                }
+                updateDisplay();
+                
+                if (currentMode === 'scientific') {
+                    showAd();
+                }
+            } catch (error) {
+                currentDisplay = 'Error';
+                updateDisplay();
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            const basicMode = document.getElementById('basicMode');
+            const scientificMode = document.getElementById('scientificMode');
+            const adContainer = document.getElementById('adContainer');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            
+            if (mode === 'basic') {
+                basicMode.style.display = 'grid';
+                scientificMode.style.display = 'none';
+                adContainer.style.display = 'none';
+            } else {
+                basicMode.style.display = 'none';
+                scientificMode.style.display = 'grid';
+                adContainer.style.display = 'flex';
+                showAd();
+            }
+            
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showAd() {
+            if (currentMode === 'scientific') {
+                const ad = document.getElementById('adContainer');
+                ad.innerHTML = '<div>🔍 Scientific Mode - AD</div>';
+                setTimeout(() => {
+                    if (currentMode === 'scientific') {
+                        ad.innerHTML = 'Ads will show here';
+                    }
+                }, 5000);
+            }
+        }
+
+        function showAuthorInfo() {
+            document.getElementById('authorModal').style.display = 'flex';
+        }
+
+        function closeAuthorInfo() {
+            document.getElementById('authorModal').style.display = 'none';
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            const key = e.key;
+            if ('0123456789'.includes(key)) appendToDisplay(key);
+            else if ('+-*/'.includes(key)) appendToDisplay(key === '*' ? '×' : key);
+            else if (key === 'Enter' || key === '=') calculate();
+            else if (key === 'Escape' || key === 'c' || key === 'C') clearDisplay();
+            else if (key === 'Backspace') deleteLast();
+            else if (key === '.') appendToDisplay('.');
+            else if (key === '(') appendToDisplay('(');
+            else if (key === ')') appendToDisplay(')');
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('authorModal');
+            if (event.target === modal) {
+                closeAuthorInfo();
+            }
+        });
+
+        updateDisplay();
     </script>
 </body>
 </html>
