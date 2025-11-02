@@ -137,3 +137,14 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Our custom rules for calculator app
+api/
+api/calculator.js
+server/
+.env
+.vercel/
+.DS_Store
+*.log
+
+
