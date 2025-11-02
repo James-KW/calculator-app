@@ -146,5 +146,17 @@ server/
 .vercel/
 .DS_Store
 *.log
+# Environment variables
+.env
+.env.local
 
+# Vercel
+.vercel/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
 
