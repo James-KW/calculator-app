@@ -1,4 +1,4 @@
-// api/calculator.js - Public version (GitHub-এ upload করবেন)
+// api/calculator.js - Temporary fix
 module.exports = async (req, res) => {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,15 +14,13 @@ module.exports = async (req, res) => {
             const { expression, function: func, value, type } = req.body;
             let result;
 
-            if (type === 'advanced' && process.env.ADVANCED_LOGIC) {
-                // Use hidden advanced logic from environment variable
-                result = executeHiddenLogic(expression, process.env.ADVANCED_LOGIC);
-            } else if (type === 'scientific' && process.env.SCIENTIFIC_LOGIC) {
-                // Use hidden scientific logic
-                result = executeScientificLogic(func, value, process.env.SCIENTIFIC_LOGIC);
+            // Temporary: Use basic logic for all calculations
+            if (expression) {
+                result = evaluateBasic(expression);
+            } else if (func && value !== undefined) {
+                result = handleScientificBasic(func, value);
             } else {
-                // Fallback to basic public logic
-                result = evaluateBasic(expression, func, value);
+                throw new Error('Invalid request');
             }
 
             res.status(200).json({
@@ -41,56 +39,44 @@ module.exports = async (req, res) => {
 };
 
 // Basic public functions
-function evaluateBasic(expression, func, value) {
-    if (expression) {
-        const sanitizedExpr = expression
-            .replace(/×/g, '*')
-            .replace(/Math\.PI/g, Math.PI)
-            .replace(/Math\.E/g, Math.E)
-            .replace(/%/g, '/100')
-            .replace(/\*\*/g, '**');
-        
-        try {
-            const result = eval(sanitizedExpr);
-            if (!isFinite(result)) throw new Error('Math Error');
-            return formatResult(result);
-        } catch (error) {
-            throw new Error('Calculation Error');
-        }
-    } else if (func && value !== undefined) {
-        // Basic scientific functions (public)
-        switch(func) {
-            case 'sin': return Math.sin(value * Math.PI / 180);
-            case 'cos': return Math.cos(value * Math.PI / 180);
-            case 'tan': return Math.tan(value * Math.PI / 180);
-            case 'sqrt': 
-                if (value < 0) throw new Error('Math Error');
-                return Math.sqrt(value);
-            case 'log':
-                if (value <= 0) throw new Error('Math Error');
-                return Math.log10(value);
-            default: return value;
-        }
-    }
-    throw new Error('Invalid request');
-}
-
-function executeHiddenLogic(expression, hiddenCode) {
-    // This will use the environment variable logic
+function evaluateBasic(expression) {
+    const sanitizedExpr = expression
+        .replace(/×/g, '*')
+        .replace(/Math\.PI/g, Math.PI)
+        .replace(/Math\.E/g, Math.E)
+        .replace(/%/g, '/100')
+        .replace(/\*\*/g, '**');
+    
     try {
-        const calculate = eval(hiddenCode);
-        return calculate(expression);
+        const result = eval(sanitizedExpr);
+        if (!isFinite(result)) throw new Error('Math Error');
+        return formatResult(result);
     } catch (error) {
-        throw new Error('Advanced calculation failed');
+        throw new Error('Calculation Error');
     }
 }
 
-function executeScientificLogic(func, value, hiddenCode) {
-    try {
-        const scientificFunc = eval(hiddenCode);
-        return scientificFunc(func, value);
-    } catch (error) {
-        throw new Error('Scientific calculation failed');
+function handleScientificBasic(func, value) {
+    switch(func) {
+        case 'sin': return Math.sin(value * Math.PI / 180);
+        case 'cos': return Math.cos(value * Math.PI / 180);
+        case 'tan': return Math.tan(value * Math.PI / 180);
+        case 'asin': return Math.asin(value) * 180 / Math.PI;
+        case 'sqrt': return Math.sqrt(value);
+        case 'power': return Math.pow(value, 2);
+        case 'log': return Math.log10(value);
+        case 'ln': return Math.log(value);
+        case 'factorial': 
+            if (value < 0 || !Number.isInteger(value)) throw new Error('Math Error');
+            let result = 1;
+            for (let i = 2; i <= value; i++) result *= i;
+            return result;
+        case 'percent': return value / 100;
+        case 'abs': return Math.abs(value);
+        case 'exp': return Math.exp(value);
+        case 'tenPower': return Math.pow(10, value);
+        case 'random': return Math.random();
+        default: return value;
     }
 }
 
