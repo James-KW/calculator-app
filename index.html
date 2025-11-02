@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+    <style>
+        /* Your CSS here - mobile-friendly version */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; 
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .calculator {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            max-width: 350px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .display {
+            background: #1a1a1a;
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: right;
+            font-size: 1.5em;
+            min-height: 80px;
+            word-break: break-all;
+        }
+        /* ... rest of your CSS ... */
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="mode-switcher">
+            <button class="mode-btn active" onclick="switchMode('basic')">Basic</button>
+            <button class="mode-btn" onclick="switchMode('scientific')">Scientific</button>
+            <button class="author-btn" onclick="showAuthorInfo()">Author</button>
+        </div>
+        <div class="display" id="display">0</div>
+        
+        <!-- Basic Mode -->
+        <div class="basic-buttons" id="basicMode">
+            <!-- Your basic buttons here -->
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button onclick="deleteLast()">⌫</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            <button class="operator" onclick="appendToDisplay('*')">×</button>
+            <!-- ... rest of buttons ... -->
+        </div>
+        
+        <!-- Scientific Mode -->
+        <div class="scientific-buttons" id="scientificMode" style="display: none;">
+            <!-- Your scientific buttons here -->
+        </div>
+    </div>
+
+    <script>
+        // Basic calculator functions
+        let currentDisplay = '0';
+        
+        function appendToDisplay(value) {
+            if (currentDisplay === '0') {
+                currentDisplay = value;
+            } else {
+                currentDisplay += value;
+            }
+            document.getElementById('display').textContent = currentDisplay;
+        }
+        
+        function clearDisplay() {
+            currentDisplay = '0';
+            document.getElementById('display').textContent = currentDisplay;
+        }
+        
+        function calculate() {
+            try {
+                // Basic calculation - advanced part will be in hidden API
+                let result = eval(currentDisplay.replace(/×/g, '*'));
+                currentDisplay = result.toString();
+                document.getElementById('display').textContent = currentDisplay;
+            } catch (error) {
+                currentDisplay = 'Error';
+                document.getElementById('display').textContent = currentDisplay;
+            }
+        }
+        
+        // More functions here...
+    </script>
+</body>
+</html>
